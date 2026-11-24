@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kod Yapbozu</title>
+<style>
+:root{--bg:#f6f5f1;--fg:#1d2330;--mut:#646b78;--panel:#fff;--panel2:#f2f1ed;--line:#e3e1d9;--acc:#4353d6;--acch:#3645bd;--soft:#e9ecfd;
+ --outbg:#fafaf7;--err:#c53030;--errsoft:#fdecea;--ok:#1f8a5b;--oksoft:#e2f4ea;--okline:#8fd3b4;--golge:rgba(30,35,60,.06);
+ --hk:#008000;--hb:#008000;--hm:#ba2121;--hn:#0a7d54;--mono:Consolas,"SF Mono",Menlo,"DejaVu Sans Mono",monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;line-height:1.5;font-size:17px;padding-bottom:60px}
+header{background:var(--bg);border-bottom:2px solid var(--line);padding:12px 16px}
+.ust{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center}
+h1{font-size:26px;color:var(--acc);font-family:var(--mono);margin-right:auto}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav button{font:inherit;font-size:15px;font-weight:700;padding:8px 14px;border-radius:10px;border:2px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}
+nav button.sec{border-color:var(--acc);color:var(--acc);background:var(--soft)}
+nav button .tk{color:var(--ok);margin-left:6px}
+main{max-width:1180px;margin:0 auto;padding:22px 16px;display:flex;flex-direction:column;gap:18px}
+.gorev h2{font-size:22px;letter-spacing:-.01em;margin-bottom:6px}
+.gorev p{max-width:75ch;margin-bottom:6px}
+.iki{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:18px;align-items:stretch}
+.lbl{font-size:14px;color:var(--mut);font-weight:700;margin-bottom:6px;min-height:22px}
+.sutun{display:flex;flex-direction:column}
+.alan{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;min-height:320px;display:flex;flex-direction:column;gap:8px;box-shadow:0 2px 8px var(--golge)}
+.alan.hedef{border-color:var(--acc);box-shadow:0 0 0 3px var(--soft)}
+.bosluk{margin:auto;color:var(--mut);font-size:16px;text-align:center;pointer-events:none}
+.sira{display:flex;align-items:center;gap:8px}
+.no{flex:none;width:22px;text-align:right;color:var(--mut);font-family:var(--mono);font-size:14px;user-select:none}
+.satir{flex:0 1 auto;min-width:0;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);padding:7px 12px 7px 8px;
+ cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;font-family:var(--mono);font-size:17px;line-height:1.4}
+.satir:hover{border-color:var(--acc)}
+.satir:focus-visible,button:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+.satir .tut{flex:none;color:#a9adb6;font-size:14px;letter-spacing:-2px}
+.satir .metin{white-space:pre-wrap;overflow-wrap:anywhere}
+.satir.hatali{border-color:var(--err);background:var(--errsoft)}
+.satir.kendi{border-style:dashed;border-color:var(--acc);background:#fff;flex:1 1 auto}
+.satir.kendi input{font:inherit;color:inherit;border:0;outline:0;background:none;width:100%;min-width:120px;user-select:text;-webkit-user-select:text}
+.satir.kendi:focus-within{box-shadow:0 0 0 3px var(--soft)}
+.oklar{flex:none;margin-left:auto;display:flex;gap:4px}
+.oklar button{font:inherit;font-size:15px;line-height:1;width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--mut);cursor:pointer}
+.oklar button:hover:not(:disabled){border-color:var(--acc);color:var(--acc)}
+.oklar button:disabled{opacity:.35;cursor:default}
+.girinti{flex:none;align-self:stretch;background-image:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px var(--birim))}
+.yer{height:40px;border:2px dashed var(--acc);background:var(--soft);border-radius:10px;flex:1}
+.hayalet{position:fixed;z-index:40;pointer-events:none;box-shadow:0 8px 24px rgba(30,35,60,.2);border-color:var(--acc);cursor:grabbing;opacity:.95}
+.soluk{opacity:.25}
+.kayip{display:none}
+button.b{font:inherit;font-size:16px;font-weight:700;padding:9px 16px;border-radius:10px;border:2px solid var(--line);background:var(--panel2);color:var(--fg);cursor:pointer}
+button.b:hover{border-color:var(--acc)}
+button.b.ana{background:var(--acc);color:#fff;border-color:var(--acc)}
+button.b.ana:hover{background:var(--acch)}
+button.b.ekle{align-self:flex-start;margin-left:30px;font-size:15px;padding:6px 12px;border-style:dashed;background:none;color:var(--acc)}
+button.duz{font:inherit;font-size:15px;border:0;background:none;color:var(--mut);text-decoration:underline;cursor:pointer;margin-left:auto}
+.btns{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.kutu{background:var(--outbg);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.cikti{font-family:var(--mono);font-size:17px;white-space:pre-wrap;overflow-wrap:anywhere;min-height:96px}
+.cikti input{font:inherit;background:#fff;color:var(--acc);border:2px solid var(--acc);border-radius:6px;padding:1px 8px;width:140px;outline:none}
+.cikti .gir{color:var(--acc);font-weight:700}
+.cikti .sis{color:var(--mut);font-family:"Segoe UI",system-ui,sans-serif;font-size:15px}
+.hata{border-color:var(--err);background:var(--errsoft)}
+.hata small{display:block;color:var(--mut);font-family:var(--mono);font-size:14px;margin-top:4px}
+.sonuc b.d{color:var(--ok)}.sonuc b.y{color:var(--err)}
+.kaydir{overflow-x:auto}
+table{border-collapse:collapse;width:100%}
+th{text-align:left;font-size:14px;color:var(--mut);padding:4px 14px 6px 0;border-bottom:1px solid var(--line)}
+td{padding:8px 14px 8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.k{font-family:var(--mono);font-size:16px;white-space:pre-wrap}
+.bitti{border:2px solid var(--okline);background:var(--oksoft);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.bitti strong{font-size:18px}
+pre.kod{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-family:var(--mono);font-size:17px;line-height:1.45;overflow-x:auto}
+.hk{color:var(--hk);font-weight:700}.hb{color:var(--hb)}.hm{color:var(--hm)}.hn{color:var(--hn)}
+@media(max-width:1100px){.satir{font-size:15.5px}}
+@media(max-width:860px){.iki{grid-template-columns:minmax(0,1fr)}.alan{min-height:150px}}
+</style>
+</head>
+<body>
+<header><div class="ust"><h1>Kod Yapbozu</h1><nav id="nav"></nav></div></header>
+<main id="ana"></main>
+<script>
+/*MOTOR-BAS*/
+/* Derste işlenen Python yapılarını çalıştıran küçük yorumlayıcı:
+   atama, int, input, print, karşılaştırma, aritmetik, if / elif / else. */
+var Motor=(function(){
+'use strict';
+function Hata(tur,satir,mesaj){this.tur=tur;this.satir=satir;this.mesaj=mesaj;}
+function Ond(v){this.v=v;}
+var ANAHTAR=['if','elif','else','and','or','not','True','False','None','pass','for','while','def','return','in','is','import','from','class','break','continue','lambda','try','except','finally','with','as','global','nonlocal','del','raise','assert','yield','async','await'];
+var M={
+ ikinokta:'Bu satırın sonunda ne eksik?',
+ esit:'Burada bir değer mi atıyoruz, yoksa soru mu soruyoruz? Tek eşittir mi, iki eşittir mi?',
+ ayni:'Bu satırı Python anlayamadı. Yazımını kontrol et: parantezler, tırnaklar, işaretler.',
+ disi:'Burada yalnız bu derste işlenen yapılar çalışıyor.'
+};
+function parcala(s,no){
+ var p=[],i=0,n=s.length,m;
+ while(i<n){
+  var c=s[i];
+  if(c===' '||c==='\t'){i++;continue;}
+  if(c==='#')break;
+  if('“”„‟‘’'.indexOf(c)>=0)throw new Hata('SyntaxError',no,'Bu tırnak işaretini Python tanımıyor. Klavyedeki düz tırnağı (") kullan.');
+  var f=(c==='f'||c==='F')&&(s[i+1]==='"'||s[i+1]==="'");
+  if(c==='"'||c==="'"||f){
+   if(f)i++;
+   var t=s[i],j=i+1,d='';
+   while(j<n&&s[j]!==t){
+    if(s[j]==='\\'&&j+1<n){var k=s[j+1];d+=k==='n'?'\n':k==='t'?'\t':(k===t||k==='\\'||k==='"'||k==="'")?k:'\\'+k;j+=2;}
+    else d+=s[j++];
+   }
+   if(j>=n)throw new Hata('SyntaxError',no,'Bu satırda açılan tırnak kapanmamış.');
+   p.push({t:f?'fmetin':'metin',v:d});i=j+1;continue;
+  }
+  if(m=/^(\d+\.\d*|\.\d+|\d+)/.exec(s.slice(i))){
+   var sonra=s[i+m[0].length]||'';
+   if(/[A-Za-z_ÇĞİÖŞÜçğıöşü]/.test(sonra))throw new Hata('SyntaxError',no,M.ayni);
+   if(/^0\d/.test(m[0])&&/[1-9]/.test(m[0])&&m[0].indexOf('.')<0)throw new Hata('SyntaxError',no,M.ayni);
+   p.push({t:'sayi',v:m[0].indexOf('.')>=0?new Ond(parseFloat(m[0])):parseInt(m[0],10)});i+=m[0].length;continue;
+  }
+  if(m=/^[A-Za-z_ÇĞİÖŞÜçğıöşü][A-Za-z0-9_ÇĞİÖŞÜçğıöşü]*/.exec(s.slice(i))){
+   p.push({t:ANAHTAR.indexOf(m[0])>=0?'kw':'ad',v:m[0]});i+=m[0].length;continue;
+  }
+  if(m=/^(==|!=|<=|>=|\+=|-=|\*=|\/\/|\*\*|[-+*\/%<>=():,])/.exec(s.slice(i))){p.push({t:'op',v:m[0]});i+=m[0].length;continue;}
+  throw new Hata('SyntaxError',no,M.ayni);
+ }
+ p.push({t:'son',v:''});
+ return p;
+}
+function Ayr(p,no){this.p=p;this.i=0;this.no=no;}
+Ayr.prototype={
+ bak:function(v){var x=this.p[this.i];return (x.t==='op'||x.t==='kw')&&x.v===v;},
+ al:function(v){if(this.bak(v)){this.i++;return true;}return false;},
+ hata:function(m){throw new Hata('SyntaxError',this.no,m||M.ayni);},
+ veya:function(){var a=this.ve();while(this.al('or'))a={k:'or',a:a,b:this.ve()};return a;},
+ ve:function(){var a=this.degil();while(this.al('and'))a={k:'and',a:a,b:this.degil()};return a;},
+ degil:function(){if(this.al('not'))return {k:'not',a:this.degil()};return this.kars();},
+ kars:function(){
+  var ilk=this.top(),zincir=[],o;
+  while((o=this.p[this.i]).t==='op'&&['==','!=','<','>','<=','>='].indexOf(o.v)>=0){this.i++;zincir.push([o.v,this.top()]);}
+  return zincir.length?{k:'kars',a:ilk,z:zincir}:ilk;
+ },
+ top:function(){var a=this.carp(),o;while((o=this.p[this.i]).t==='op'&&(o.v==='+'||o.v==='-')){this.i++;a={k:'ar',o:o.v,a:a,b:this.carp()};}return a;},
+ carp:function(){var a=this.birli(),o;while((o=this.p[this.i]).t==='op'&&['*','/','//','%'].indexOf(o.v)>=0){this.i++;a={k:'ar',o:o.v,a:a,b:this.birli()};}return a;},
+ birli:function(){if(this.al('-'))return {k:'eksi',a:this.birli()};if(this.al('+'))return this.birli();return this.us();},
+ us:function(){var a=this.cagri();if(this.al('**'))return {k:'ar',o:'**',a:a,b:this.birli()};return a;},
+ cagri:function(){
+  var a=this.atom();
+  while(this.bak('(')){
+   this.i++;var ar=[];
+   if(!this.al(')')){
+    for(;;){
+     if(this.bak(')')&&ar.length){this.i++;break;}
+     ar.push(this.veya());
+     if(this.bak('='))this.hata(M.esit);
+     if(this.al(','))continue;
+     if(this.al(')'))break;
+     this.hata(this.p[this.i].t==='son'?'Bu satırda açılan parantez kapanmamış.':null);
+    }
+   }
+   a={k:'cagri',f:a,ar:ar,no:this.no};
+  }
+  return a;
+ },
+ atom:function(){
+  var x=this.p[this.i];
+  if(x.t==='sayi'||x.t==='metin'||x.t==='fmetin'){
+   this.i++;
+   if(x.t==='sayi')return {k:'sabit',v:x.v};
+   var n=this.metin(x);
+   while(this.p[this.i].t==='metin'||this.p[this.i].t==='fmetin')n={k:'ar',o:'+',a:n,b:this.metin(this.p[this.i++])};
+   return n;
+  }
+  if(x.t==='ad'){this.i++;return {k:'ad',v:x.v,no:this.no};}
+  if(x.t==='kw'&&(x.v==='True'||x.v==='False'||x.v==='None')){this.i++;return {k:'sabit',v:x.v==='None'?null:x.v==='True'};}
+  if(this.al('(')){
+   var a=this.veya();
+   if(this.bak('='))this.hata(M.esit);
+   if(!this.al(')'))this.hata(this.p[this.i].t==='son'?'Bu satırda açılan parantez kapanmamış.':null);
+   return a;
+  }
+  if(x.t==='op'&&x.v==='='&&this.i>0)this.hata(M.esit);
+  this.hata();
+ },
+ metin:function(x){
+  if(x.t==='metin')return {k:'sabit',v:x.v};
+  var par=[],re=/\{\{|\}\}|\{([^{}]*)\}|[{}]/g,son=0,m,d='';
+  while(m=re.exec(x.v)){
+   d+=x.v.slice(son,m.index);son=re.lastIndex;
+   if(m[0]==='{{')d+='{';else if(m[0]==='}}')d+='}';
+   else if(m[1]===undefined||!m[1].trim())this.hata();
+   else{par.push({k:'sabit',v:d});d='';var alt=new Ayr(parcala(m[1],this.no),this.no),e=alt.veya();if(alt.p[alt.i].t!=='son')this.hata();par.push(e);}
+  }
+  par.push({k:'sabit',v:d+x.v.slice(son)});
+  return {k:'fmetin',p:par};
+ },
+ bitti:function(){return this.p[this.i].t==='son';}
+};
+/* satirlar: [{g: girinti boşluğu, s: metin}] ; boş satırlar atlanır */
+function coz(satirlar){
+ var L=[];
+ satirlar.forEach(function(x,i){var s=x.s.trim();if(s&&s[0]!=='#')L.push({g:x.g,s:s,no:i+1});});
+ /* hatalar yukarıdan aşağıya, satıra gelindiğinde söylenir (Python gibi) */
+ function ac(x){if(x.girHata)throw x.girHata;if(!x.p)x.p=parcala(x.s,x.no);return x;}
+ /* girinti düzeyleri, Python'un yığın kuralıyla */
+ var yigin=[0];
+ L.forEach(function(x){
+  if(x.g>yigin[yigin.length-1])yigin.push(x.g);
+  else{while(yigin[yigin.length-1]>x.g)yigin.pop();
+   if(yigin[yigin.length-1]!==x.g){yigin.push(x.g);x.girHata=new Hata('IndentationError',x.no,'Bu satırın girintisi üstündeki hiçbir satırla aynı hizada değil.');}}
+ });
+ var i=0;
+ function blok(g){
+  var cikan=[];
+  while(i<L.length){
+   if(L[i].girHata)throw L[i].girHata;
+   if(L[i].g<g)break;
+   if(L[i].g>g)throw new Hata('IndentationError',L[i].no,'Bu satır içeriden başlıyor ama hemen üstündeki satır bir koşul değil. Girintisine bak.');
+   cikan.push(deyim(g));
+  }
+  return cikan;
+ }
+ function govde(a,x,ad,g){
+  /* koşul okundu; iki nokta ve gövde */
+  if(!a.al(':')){
+   if(a.bak('='))a.hata(M.esit);
+   a.hata(a.bitti()?M.ikinokta:null);
+  }
+  if(!a.bitti()){var ic=basit(a,x);i++;return [ic];}
+  i++;
+  if(i<L.length&&L[i].girHata)throw L[i].girHata;
+  if(i>=L.length||L[i].g<=g)throw new Hata('IndentationError',i<L.length?L[i].no:x.no,
+   '"'+ad+'" satırının altında ona bağlı bir satır olmalı. Hangi satır ona ait? Girintisine bak.');
+  return blok(L[i].g);
+ }
+ function basit(a,x){
+  var p=a.p;
+  if(a.bak('pass')){a.i++;if(!a.bitti())a.hata();return {k:'pass'};}
+  if(p[a.i].t==='kw'&&['if','elif','else'].indexOf(p[a.i].v)>=0)a.hata();
+  if(p[a.i].t==='kw'&&['True','False','None','not'].indexOf(p[a.i].v)<0)a.hata(M.disi);
+  if(p[a.i].t==='ad'&&p[a.i+1].t==='op'&&['=','+=','-=','*='].indexOf(p[a.i+1].v)>=0){
+   var ad=p[a.i].v,o=p[a.i+1].v;a.i+=2;
+   var e=a.veya();
+   if(!a.bitti())a.hata(a.bak('=')?M.esit:null);
+   return {k:'ata',ad:ad,e:o==='='?e:{k:'ar',o:o[0],a:{k:'ad',v:ad,no:x.no},b:e},no:x.no};
+  }
+  var d=a.veya();
+  if(!a.bitti())a.hata(a.bak('=')?M.esit:null);
+  return {k:'ifade',e:d,no:x.no};
+ }
+ function deyim(g){
+  var x=ac(L[i]),a=new Ayr(x.p,x.no);
+  if(a.bak('elif')||a.bak('else'))throw new Hata('SyntaxError',x.no,'Bu "'+x.p[0].v+'" hangi "if" satırına ait? Yerine ve girintisine bak.');
+  if(a.al('if')){
+   if(a.bitti()||a.bak(':'))a.hata('"if" satırında koşul eksik.');
+   var kos=a.veya(),dal=[{c:kos,no:x.no,g:govde(a,x,'if',g)}],son=null;
+   while(i<L.length&&(L[i].girHata||L[i].g===g)){
+    var y=ac(L[i]),b=new Ayr(y.p,y.no);
+    if(b.al('elif')){if(b.bitti()||b.bak(':'))b.hata('"elif" satırında koşul eksik.');var k2=b.veya();dal.push({c:k2,no:y.no,g:govde(b,y,'elif',g)});}
+    else if(b.al('else')){
+     if(!b.bitti()&&!b.bak(':'))b.hata('"else" satırında ":" bekleniyordu. "else" koşul alır mı?');
+     son=govde(b,y,'else',g);break;
+    }else break;
+   }
+   return {k:'if',dal:dal,son:son};
+  }
+  var d=basit(a,x);i++;return d;
+ }
+ if(L.length&&L[0].g>0)throw new Hata('IndentationError',L[0].no,'Programın ilk satırı içeriden başlıyor. Girintisine bak.');
+ return blok(0);
+}
+function say(v){return typeof v==='number'||typeof v==='boolean'||v instanceof Ond;}
+function ham(v){return v instanceof Ond?v.v:Number(v);}
+function tipAd(v){return v===null?'NoneType':typeof v==='boolean'?'bool':typeof v==='number'?'int':v instanceof Ond?'float':typeof v==='string'?'str':'builtin_function_or_method';}
+function yazi(v){
+ if(v===null)return 'None';if(v===true)return 'True';if(v===false)return 'False';
+ if(v instanceof Ond){var s=String(v.v);return /^-?\d+$/.test(s)?s+'.0':s;}
+ if(v&&v.yerlesik)return '<built-in function '+v.yerlesik+'>';
+ return String(v);
+}
+function dogru(v){if(v===null)return false;if(say(v))return ham(v)!==0;if(typeof v==='string')return v!=='';return true;}
+function tipHata(no){return new Hata('TypeError',no,'Bu satırda bir sayıyla bir metin birlikte kullanılıyor. Değişkenin türünü kontrol et.');}
+var YER={print:1,input:1,int:1,float:1,str:1,bool:1};
+/* üreteç: input gelince {soru} verir, next(cevap) ile sürer; yaz(metin) çıktı alır */
+function* yurut(agac,yaz){
+ var D=Object.create(null),no=1;
+ function* ev(e){
+  var a,b,i;
+  switch(e.k){
+  case 'sabit':return e.v;
+  case 'ad':
+   if(e.v in D)return D[e.v];
+   if(YER[e.v])return {yerlesik:e.v};
+   var h=new Hata('NameError',e.no,'"'+e.v+'" bu satırda kullanılıyor ama daha önce tanımlanmamış. Önce hangi satır çalışmalı?');h.ad=e.v;throw h;
+  case 'and':a=yield* ev(e.a);return dogru(a)?yield* ev(e.b):a;
+  case 'or':a=yield* ev(e.a);return dogru(a)?a:yield* ev(e.b);
+  case 'not':return !dogru(yield* ev(e.a));
+  case 'eksi':a=yield* ev(e.a);if(!say(a))throw tipHata(no);return a instanceof Ond?new Ond(-a.v):-Number(a);
+  case 'fmetin':var t='';for(i=0;i<e.p.length;i++)t+=yazi(yield* ev(e.p[i]));return t;
+  case 'kars':
+   a=yield* ev(e.a);
+   for(i=0;i<e.z.length;i++){b=yield* ev(e.z[i][1]);if(!kars(e.z[i][0],a,b))return false;a=b;}
+   return true;
+  case 'ar':a=yield* ev(e.a);b=yield* ev(e.b);return arit(e.o,a,b);
+  case 'cagri':
+   var f=yield* ev(e.f),ar=[];
+   for(i=0;i<e.ar.length;i++)ar.push(yield* ev(e.ar[i]));
+   if(!f||!f.yerlesik)throw new Hata('TypeError',no,'Bu satırda parantezle çağrılan şey bir fonksiyon değil.');
+   if(f.yerlesik==='print'){yaz(ar.map(yazi).join(' ')+'\n');return null;}
+   if(ar.length>1)throw new Hata('TypeError',no,'"'+f.yerlesik+'" en çok bir değer alır.');
+   if(f.yerlesik==='input')return String(yield {soru:ar.length?yazi(ar[0]):''});
+   if(f.yerlesik==='str')return ar.length?yazi(ar[0]):'';
+   if(f.yerlesik==='bool')return ar.length?dogru(ar[0]):false;
+   a=ar.length?ar[0]:0;
+   if(typeof a==='string'){
+    var tam=/^\s*[+-]?\d+(_\d+)*\s*$/,ond=/^\s*[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?\s*$/;
+    if(f.yerlesik==='int'){if(!tam.test(a))throw new Hata('ValueError',no,'"'+a+'" bir tam sayıya çevrilemedi. Program çalışırken tam sayı gir.');return parseInt(a.replace(/_/g,''),10);}
+    if(!ond.test(a))throw new Hata('ValueError',no,'"'+a+'" bir sayıya çevrilemedi. Program çalışırken sayı gir.');return new Ond(parseFloat(a));
+   }
+   if(!say(a))throw new Hata('TypeError',no,'Bu değer sayıya çevrilemez.');
+   return f.yerlesik==='int'?Math.trunc(ham(a)):new Ond(ham(a));
+  }
+ }
+ function kars(o,a,b){
+  if(o==='=='||o==='!='){
+   var es=say(a)&&say(b)?ham(a)===ham(b):(a&&a.yerlesik&&b&&b.yerlesik)?a.yerlesik===b.yerlesik:a===b;
+   return o==='=='?es:!es;
+  }
+  var x,y;
+  if(say(a)&&say(b)){x=ham(a);y=ham(b);}else if(typeof a==='string'&&typeof b==='string'){x=a;y=b;}else throw tipHata(no);
+  return o==='<'?x<y:o==='>'?x>y:o==='<='?x<=y:x>=y;
+ }
+ function arit(o,a,b){
+  if(o==='+'&&typeof a==='string'&&typeof b==='string')return a+b;
+  if(o==='*'&&(typeof a==='string'||typeof b==='string')){
+   var m=typeof a==='string'?a:b,s=m===a?b:a;
+   if(typeof s!=='number'&&typeof s!=='boolean')throw tipHata(no);
+   return m.repeat(Math.max(0,Number(s)));
+  }
+  if(!say(a)||!say(b))throw tipHata(no);
+  var x=ham(a),y=ham(b),of=a instanceof Ond||b instanceof Ond,r;
+  if((o==='/'||o==='//'||o==='%')&&y===0)throw new Hata('ZeroDivisionError',no,'Bir sayı sıfıra bölünemez.');
+  if(o==='+')r=x+y;else if(o==='-')r=x-y;else if(o==='*')r=x*y;else if(o==='/')return new Ond(x/y);
+  else if(o==='//')r=Math.floor(x/y);else if(o==='%')r=x-Math.floor(x/y)*y;else{r=Math.pow(x,y);if(y<0)of=true;}
+  return of?new Ond(r):r;
+ }
+ function* blok(l){
+  for(var i=0;i<l.length;i++){
+   var d=l[i];
+   if(d.k==='pass')continue;
+   if(d.k==='if'){
+    var oldu=false;
+    for(var j=0;j<d.dal.length;j++){no=d.dal[j].no;if(dogru(yield* ev(d.dal[j].c))){yield* blok(d.dal[j].g);oldu=true;break;}}
+    if(!oldu&&d.son)yield* blok(d.son);
+    continue;
+   }
+   no=d.no;var v=yield* ev(d.e);
+   if(d.k==='ata')D[d.ad]=v;
+  }
+ }
+ yield* blok(agac);
+}
+/* hazır girdilerle çalıştırır: {cikti, hata, soruSay} */
+function dene(satirlar,girdiler){
+ var c='',n=0;
+ try{
+  var u=yurut(coz(satirlar),function(t){c+=t;}),r=u.next();
+  while(!r.done){
+   if(n>=girdiler.length)return {cikti:c,hata:new Hata('',0,'Program birden fazla soru sordu. Soru soran satırı bir kez kullan.'),soruSay:n+1};
+   r=u.next(girdiler[n++]);
+  }
+  return {cikti:c,hata:null,soruSay:n};
+ }catch(e){if(!(e instanceof Hata))throw e;return {cikti:c,hata:e,soruSay:n};}
+}
+return {coz:coz,yurut:yurut,dene:dene,Hata:Hata};
+})();
+/*MOTOR-SON*/
+</script>
+<script>
+(function(){
+'use strict';
+/* ---------------------------------------------------------------- problemler */
+var PROBLEMLER=[
+{id:'p1',ad:'Sınav notu',
+ metin:['Bir okulda sınavdan 50 ve üzeri alan öğrenci geçiyor. Program öğrenciye sınavdan kaç aldığını soracak. Geçen öğrenciye "Geçtin!", geçemeyen öğrenciye "Bir dahaki sefere!" yazacak.',
+  'Satırları doğru sıraya ve doğru girintiye yerleştir. Satırların hepsini kullanman gerekmeyebilir.'],
+ satirlar:['print("Bir dahaki sefere!")','if puan = 50:','else:','puan = int(input("Sınavdan kaç aldın? "))','print("Geçtin!")','if puan >= 50:'],
+ girdiAd:'Not',testler:[['30','Bir dahaki sefere!'],['50','Geçtin!'],['80','Geçtin!']]},
+{id:'p2',ad:'Tahmin oyunu',kendi:true,kopya:true,
+ metin:['Bilgisayar 57 sayısını aklında tutuyor. Program oyuncudan 1 ile 100 arasında bir tahmin isteyecek. Tahmin 57\'den küçükse "Daha büyük bir sayı söyle.", büyükse "Daha küçük bir sayı söyle." yazacak. Oyuncu sayıyı bilirse "Bildin!" yazacak.',
+  'Satırları doğru sıraya ve doğru girintiye yerleştir. Oyuncunun sayıyı bildiği durumun satırları verilmedi; onları kendin yaz.'],
+ satirlar:['elif tahmin > gizli:','print("Daha büyük bir sayı söyle.")','tahmin = int(input("Tahminin (1-100): "))','print("Daha küçük bir sayı söyle.")','gizli = 57','if tahmin < gizli:'],
+ girdiAd:'Tahmin',testler:[['30','Daha büyük bir sayı söyle.'],['80','Daha küçük bir sayı söyle.'],['57','Bildin!']]}
+];
+var ENCOK=4;
+/* ---------------------------------------------------------------- yardımcılar */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+function dugme(cls,yazi,is,etiket){var b=el('button',cls);b.type='button';b.textContent=yazi;if(etiket){b.setAttribute('aria-label',etiket);b.title=etiket;}b.onclick=is;return b;}
+var PARCA=/("[^"\n]*"?|'[^'\n]*'?)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_ÇĞİÖŞÜçğıöşü][A-Za-z0-9_ÇĞİÖŞÜçğıöşü]*)|([\s\S])/g;
+function hl(s){return s.replace(PARCA,function(m,metin,sayi,soz){var e=esc(m);
+ if(metin)return '<span class="hm">'+e+'</span>';if(sayi)return '<span class="hn">'+e+'</span>';
+ if(/^(if|elif|else|and|or|not|True|False)$/.test(soz||''))return '<span class="hk">'+e+'</span>';
+ if(/^(print|input|int)$/.test(soz||''))return '<span class="hb">'+e+'</span>';return e;});}
+function sade(s){return s.toLocaleLowerCase('tr').replace(/[.!?…]+/g,'').replace(/\s+/g,' ').trim();}
+/* ---------------------------------------------------------------- durum: sekme kapanınca silinir, sayfa yenilenince kalır */
+var ANAHTAR='kod-yapbozu-1',durum=null;
+try{durum=JSON.parse(sessionStorage.getItem(ANAHTAR)||'null');}catch(e){}
+if(!durum||!durum.p)durum={sekme:0,p:{}};
+PROBLEMLER.forEach(function(p){if(!durum.p[p.id])durum.p[p.id]=bos();});
+function bos(){return {cozum:[],tamam:null,say:0};}
+function kaydet(){try{sessionStorage.setItem(ANAHTAR,JSON.stringify(durum));}catch(e){}}
+function P(){return PROBLEMLER[durum.sekme];}
+function D(){return durum.p[P().id];}
+function metni(x){return x.kendi?x.t:P().satirlar[x.id];}
+function havuz(){var v={};D().cozum.forEach(function(x){if(!x.kendi)v[x.id]=1;});return P().satirlar.map(function(_,i){return i;}).filter(function(i){return !v[i];});}
+function programSatirlari(){return D().cozum.map(function(x){return {g:x.g*4,s:metni(x)};});}
+function kodMetni(){return D().cozum.filter(function(x){return metni(x).trim();}).map(function(x){return '    '.repeat(x.g)+metni(x).trim();}).join('\n');}
+function sira(kim){return D().cozum.findIndex(function(x){return anahtar(x)===kim;});}
+function anahtar(x){return x.kendi?'k'+x.id:'s'+x.id;}
+/* ---------------------------------------------------------------- çizim */
+var ana=document.getElementById('ana'),nav=document.getElementById('nav'),havuzEl,cozumEl,ciktiEl,sonucEl,bittiEl,calB,birim=40,calisma=0;
+function birimOlc(){var s=el('span');s.style.cssText='position:absolute;visibility:hidden;font:17px '+getComputedStyle(document.documentElement).getPropertyValue('--mono');s.textContent='00000000';document.body.appendChild(s);birim=Math.round(s.getBoundingClientRect().width/2)||40;s.remove();document.documentElement.style.setProperty('--birim',birim+'px');}
+function navCiz(){nav.innerHTML='';PROBLEMLER.forEach(function(p,i){
+ var b=dugme(i===durum.sekme?'sec':'','',function(){if(durum.sekme===i)return;durum.sekme=i;kaydet();sayfa();});
+ b.innerHTML=(i+1)+'. '+esc(p.ad)+(durum.p[p.id].tamam?'<span class="tk" aria-label="tamamlandı">✓</span>':'');
+ if(i===durum.sekme)b.setAttribute('aria-current','page');nav.appendChild(b);});}
+function sayfa(){
+ calisma++;navCiz();ana.innerHTML='';
+ var g=el('section','gorev');g.appendChild(el('h2','',esc(P().ad)));P().metin.forEach(function(m){g.appendChild(el('p','',esc(m)));});ana.appendChild(g);
+ var iki=el('div','iki'),a=el('div','sutun'),b=el('div','sutun');
+ a.appendChild(el('div','lbl','Satırlar'));havuzEl=el('div','alan');a.appendChild(havuzEl);
+ b.appendChild(el('div','lbl','Programın'));cozumEl=el('div','alan');b.appendChild(cozumEl);
+ iki.appendChild(a);iki.appendChild(b);ana.appendChild(iki);
+ var bt=el('div','btns');
+ calB=dugme('b','Çalıştır',calistir);bt.appendChild(calB);bt.appendChild(dugme('b ana','Kontrol et',kontrol));
+ bt.appendChild(dugme('duz','Baştan başla',function(){if(!D().cozum.length||confirm('Bu problemdeki satırların hepsi geri alınsın mı?')){var t=D().tamam;durum.p[P().id]=bos();durum.p[P().id].tamam=t;degisti();}}));
+ ana.appendChild(bt);
+ ciktiEl=el('div','kutu cikti');ciktiEl.setAttribute('aria-label','Program çıktısı');ciktiEl.hidden=true;ana.appendChild(ciktiEl);
+ sonucEl=el('div');sonucEl.setAttribute('aria-live','polite');ana.appendChild(sonucEl);
+ bittiEl=el('div');ana.appendChild(bittiEl);
+ ciz();bittiCiz();
+}
+function degisti(odak){calisma++;sonucEl.innerHTML='';ciktiEl.hidden=true;ciktiEl.innerHTML='';kaydet();ciz(odak);bittiCiz();}
+function ciz(odak){
+ havuzEl.innerHTML='';cozumEl.innerHTML='';
+ var h=havuz();
+ h.forEach(function(i){var s=satirEl('s'+i,P().satirlar[i],false);s.setAttribute('aria-label',P().satirlar[i]+' — programa ekle');havuzEl.appendChild(s);});
+ if(!h.length)havuzEl.appendChild(el('div','bosluk','Bütün satırlar programda.'));
+ D().cozum.forEach(function(x,n){
+  var r=el('div','sira');r.dataset.kim=anahtar(x);r.appendChild(el('span','no',n+1));
+  if(x.g){var gi=el('span','girinti');gi.style.width=(x.g*birim)+'px';r.appendChild(gi);}
+  r.appendChild(x.kendi?kendiEl(x):satirEl(anahtar(x),metni(x),true));
+  var o=el('span','oklar');
+  o.appendChild(ok('←','Girintiyi azalt',x.g<1,function(){girinti(anahtar(x),-1);}));
+  o.appendChild(ok('→','Girintiyi artır',x.g>=ENCOK,function(){girinti(anahtar(x),1);}));
+  o.appendChild(ok('×',x.kendi?'Satırı sil':'Satırı geri koy',false,function(){cikar(anahtar(x));}));
+  r.appendChild(o);cozumEl.appendChild(r);
+ });
+ if(!D().cozum.length)cozumEl.appendChild(el('div','bosluk','Satırları buraya sürükle.<br>Sağa kaydırırsan girintisi artar.'));
+ if(P().kendi&&D().cozum.length)cozumEl.appendChild(dugme('b ekle','+ Kendi satırını yaz',function(){kendiEkle(D().cozum.length,0);}));
+ if(odak){var q='[data-kim="'+odak+'"]',e=document.querySelector(q+' input')||document.querySelector(q+' .satir,.satir'+q);if(e)e.focus();}
+}
+function ok(y,e,kapali,is){var b=dugme('',y,is,e);b.disabled=kapali;return b;}
+function satirEl(kim,metin,icerde){
+ var s=el('div','satir','<span class="tut" aria-hidden="true">⋮⋮</span><span class="metin">'+hl(metin)+'</span>');
+ if(!icerde)s.dataset.kim=kim;
+ s.tabIndex=0;s.setAttribute('role','button');
+ s.addEventListener('pointerdown',function(e){surukle(e,kim,icerde,s);});
+ s.addEventListener('keydown',function(e){
+  var n=sira(kim),c=D().cozum;
+  if(!icerde){if(e.key==='Enter'||e.key===' '){e.preventDefault();ekle(kim);}return;}
+  if(e.key==='ArrowRight'){e.preventDefault();girinti(kim,1);}
+  else if(e.key==='ArrowLeft'){e.preventDefault();girinti(kim,-1);}
+  else if(e.key==='ArrowUp'&&n>0){e.preventDefault();c.splice(n-1,0,c.splice(n,1)[0]);degisti(kim);}
+  else if(e.key==='ArrowDown'&&n<c.length-1){e.preventDefault();c.splice(n+1,0,c.splice(n,1)[0]);degisti(kim);}
+  else if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();cikar(kim);}
+ });
+ return s;
+}
+function kendiEl(x){
+ var kim=anahtar(x),s=el('div','satir kendi','<span class="tut" aria-hidden="true">⋮⋮</span>'),i=el('input');
+ i.type='text';i.value=x.t;i.spellcheck=false;i.autocomplete='off';i.setAttribute('autocorrect','off');i.setAttribute('autocapitalize','off');i.setAttribute('aria-label','Kendi satırın');
+ i.placeholder='kodunu buraya yaz';
+ i.addEventListener('input',function(){
+  var m=/^(\t| {4})/.exec(i.value);
+  if(m){x.t=i.value.slice(m[0].length);x.g=Math.min(ENCOK,x.g+1);degisti(kim);return;}
+  x.t=i.value;sonucEl.innerHTML='';hataIsareti();ciktiEl.hidden=true;calisma++;kaydet();bittiCiz();
+ });
+ i.addEventListener('blur',function(){if(x.t!==x.t.trim()){x.t=x.t.trim();i.value=x.t;kaydet();}});
+ i.addEventListener('keydown',function(e){
+  if(e.key==='Tab'){e.preventDefault();girinti(kim,e.shiftKey?-1:1);}
+  else if(e.key==='Enter'){e.preventDefault();kendiEkle(sira(kim)+1,x.g);}
+  else if(e.key==='Escape'){i.blur();}
+  else if(e.key==='Backspace'&&i.selectionStart===0&&i.selectionEnd===0){
+   if(x.g){e.preventDefault();girinti(kim,-1);}
+   else if(!x.t){e.preventDefault();cikar(kim);}
+  }
+ });
+ s.appendChild(i);
+ s.addEventListener('pointerdown',function(e){if(e.target!==i)surukle(e,kim,true,s);});
+ return s;
+}
+function ekle(kim){D().cozum.push({id:+kim.slice(1),g:0});degisti(kim);}
+function kendiEkle(n,g){var x={kendi:true,id:++D().say,t:'',g:g};D().cozum.splice(n,0,x);degisti(anahtar(x));}
+function cikar(kim){var n=sira(kim),c=D().cozum;c.splice(n,1);var k=c[Math.min(n,c.length-1)];degisti(k&&k.kendi?anahtar(k):null);}
+function girinti(kim,d){var x=D().cozum[sira(kim)],g=Math.max(0,Math.min(ENCOK,x.g+d));if(g!==x.g){x.g=g;degisti(kim);}}
+function hataIsareti(satir){Array.prototype.forEach.call(cozumEl.querySelectorAll('.sira'),function(r,i){r.querySelector('.satir').classList.toggle('hatali',i+1===satir);});}
+/* ---------------------------------------------------------------- sürükleme */
+function surukle(e,kim,icerde,s){
+ if(e.button)return;
+ var x0=e.clientX,y0=e.clientY,r=s.getBoundingClientRect(),hay=null,yer=null,konum=null,satirSira=icerde?s.parentNode:null;
+ function bas(){
+  hay=s.cloneNode(true);hay.classList.add('hayalet');hay.removeAttribute('data-kim');hay.style.width=Math.min(r.width,560)+'px';document.body.appendChild(hay);
+  if(icerde)satirSira.classList.add('kayip');else s.classList.add('soluk');
+  var b=cozumEl.querySelector('.bosluk');if(b)b.style.visibility='hidden';
+  document.body.style.cursor='grabbing';
+ }
+ function icinde(a,x,y){var q=a.getBoundingClientRect();return x>=q.left-24&&x<=q.right+24&&y>=q.top-24&&y<=q.bottom+24;}
+ function git(ev){
+  var dx=ev.clientX-x0,dy=ev.clientY-y0;
+  if(!hay){if(Math.abs(dx)+Math.abs(dy)<6)return;bas();}
+  ev.preventDefault();
+  hay.style.left=(r.left+dx)+'px';hay.style.top=(r.top+dy)+'px';
+  var ic=icinde(cozumEl,ev.clientX,ev.clientY);
+  cozumEl.classList.toggle('hedef',ic);havuzEl.classList.toggle('hedef',!ic&&icerde&&icinde(havuzEl,ev.clientX,ev.clientY));
+  if(!ic){if(yer){yer.remove();yer=null;}konum=null;return;}
+  var rows=Array.prototype.filter.call(cozumEl.querySelectorAll('.sira'),function(q){return q!==satirSira&&!q.classList.contains('yersira');}),n=rows.length;
+  for(var i=0;i<rows.length;i++){var q=rows[i].getBoundingClientRect();if(ev.clientY<q.top+q.height/2){n=i;break;}}
+  var c=D().cozum.filter(function(q){return anahtar(q)!==kim;}),enc=n?Math.min(ENCOK,c[n-1].g+1):0;
+  var taban=cozumEl.getBoundingClientRect().left+15+30,g=Math.round((r.left+dx-taban)/birim);
+  g=Math.max(0,Math.min(enc,g));
+  konum={n:n,g:g};
+  if(!yer){yer=el('div','sira yersira','<span class="no"></span><span class="girinti"></span><span class="yer"></span>');}
+  yer.children[1].style.width=(g*birim)+'px';yer.children[1].style.display=g?'':'none';
+  var once=rows[n]||cozumEl.querySelector('.ekle');
+  if(once){if(yer.nextSibling!==once)cozumEl.insertBefore(yer,once);}else if(cozumEl.lastChild!==yer)cozumEl.appendChild(yer);
+ }
+ function bitir(ev){
+  window.removeEventListener('pointermove',git);window.removeEventListener('pointerup',bitir);window.removeEventListener('pointercancel',iptal);
+  if(!hay){if(!icerde&&ev.type==='pointerup')ekle(kim);return;}
+  temizle();
+  if(konum){
+   var c=D().cozum,x=icerde?c.splice(sira(kim),1)[0]:{id:+kim.slice(1)};x.g=konum.g;c.splice(konum.n,0,x);degisti(kim);
+  }else if(icerde&&icinde(havuzEl,ev.clientX,ev.clientY)&&!D().cozum[sira(kim)].kendi)cikar(kim);
+  else ciz(kim);
+ }
+ function iptal(ev){konum=null;if(hay){temizle();ciz(kim);}window.removeEventListener('pointermove',git);window.removeEventListener('pointerup',bitir);window.removeEventListener('pointercancel',iptal);}
+ function temizle(){hay.remove();if(yer)yer.remove();cozumEl.classList.remove('hedef');havuzEl.classList.remove('hedef');document.body.style.cursor='';}
+ window.addEventListener('pointermove',git);window.addEventListener('pointerup',bitir);window.addEventListener('pointercancel',iptal);
+}
+/* ---------------------------------------------------------------- çalıştır */
+function hataKutusu(h){
+ hataIsareti(h.satir);
+ return el('div','kutu hata',(h.satir?'<b>'+h.satir+'. satır:</b> ':'')+esc(h.mesaj)+(h.tur?'<small>'+esc(h.tur)+'</small>':''));
+}
+function bosMu(){if(kodMetni())return false;sonucEl.innerHTML='';sonucEl.appendChild(el('div','kutu','Önce satırları "Programın" alanına yerleştir.'));return true;}
+function calistir(){
+ sonucEl.innerHTML='';hataIsareti();if(bosMu())return;
+ var ben=++calisma,u;
+ ciktiEl.hidden=false;ciktiEl.innerHTML='';
+ function yaz(t,c){var s=el('span',c||'');s.textContent=t;ciktiEl.appendChild(s);}
+ function surdur(cevap){
+  var r;
+  try{r=u.next(cevap);}catch(e){if(!(e instanceof Motor.Hata))throw e;sonucEl.innerHTML='';sonucEl.appendChild(hataKutusu(e));if(!ciktiEl.childNodes.length)ciktiEl.hidden=true;return;}
+  if(r.done){yaz((ciktiEl.childNodes.length?'':'Program çalıştı ama ekrana bir şey yazmadı.\n')+'\nYeniden denemek için Çalıştır\'a bas.','sis');calB.focus({preventScroll:true});return;}
+  yaz(r.value.soru);
+  var i=el('input');i.type='text';i.autocomplete='off';i.setAttribute('aria-label',r.value.soru||'Girdi');ciktiEl.appendChild(i);i.focus();
+  i.addEventListener('keydown',function(e){if(e.key!=='Enter'||ben!==calisma)return;e.preventDefault();var v=i.value;i.remove();yaz(v+'\n','gir');surdur(v);});
+ }
+ try{u=Motor.yurut(Motor.coz(programSatirlari()),function(t){yaz(t);});}
+ catch(e){if(!(e instanceof Motor.Hata))throw e;ciktiEl.hidden=true;sonucEl.appendChild(hataKutusu(e));return;}
+ surdur();
+}
+/* ---------------------------------------------------------------- kontrol */
+function kontrol(){
+ calisma++;ciktiEl.hidden=true;ciktiEl.innerHTML='';sonucEl.innerHTML='';hataIsareti();if(bosMu())return;
+ var prog=programSatirlari();
+ try{Motor.coz(prog);}catch(e){if(!(e instanceof Motor.Hata))throw e;sonucEl.appendChild(hataKutusu(e));return;}
+ var hepsi=true,ilkHata=null,govde='';
+ P().testler.forEach(function(t){
+  var r=Motor.dene(prog,[t[0]]),iyi=!r.hata&&r.soruSay===1&&sade(r.cikti)===sade(t[1]);
+  if(!iyi)hepsi=false;if(r.hata&&!ilkHata)ilkHata=r.hata;
+  var c=r.cikti.replace(/\n$/,'');
+  govde+='<tr><td>'+esc(t[0])+'</td><td class="k">'+esc(t[1])+'</td><td class="k">'+(c?esc(c):'<span style="color:var(--mut)">'+(r.hata?'hata':'hiçbir şey yazmadı')+'</span>')+'</td><td><b class="'+(iyi?'d">✓ doğru':'y">✗ farklı')+'</b></td></tr>';
+ });
+ if(ilkHata)sonucEl.appendChild(hataKutusu(ilkHata));
+ else{
+  var k=el('div','kutu sonuc kaydir');
+  k.innerHTML='<table><thead><tr><th>'+esc(P().girdiAd)+'</th><th>Yazması gereken</th><th>Senin programın</th><th></th></tr></thead><tbody>'+govde+'</tbody></table>';
+  sonucEl.appendChild(k);
+ }
+ if(hepsi){D().tamam=kodMetni();kaydet();navCiz();bittiCiz();bittiEl.scrollIntoView({block:'end'});}
+ else sonucEl.scrollIntoView({block:'nearest'});
+}
+function bittiCiz(){
+ bittiEl.innerHTML='';var kod=D().tamam;if(!kod)return;
+ var b=el('div','bitti'),n=durum.sekme+1;
+ var ayni=kod===kodMetni();
+ b.appendChild(el('strong','',P().kopya?(ayni?'Oyunun çalışıyor. Çalıştır\'a basıp istediğin kadar oynayabilirsin.':'Daha önce çalışan oyunun:'):(ayni?'Programın çalışıyor.':'Bu problemi daha önce çözdün.')));
+ if(P().kopya){
+  if(!/^\s*else\s*:/m.test(kod))b.appendChild(el('div','','Son dalı koşul yazmadan da kurabilir misin?'));
+  var p=el('pre','kod',hl(kod));b.appendChild(p);
+  var s=el('div','btns'),d=dugme('b ana','Kodu kopyala',function(){kopyala(kod,p,function(iyi){d.textContent=iyi?'Kopyalandı':'Kod seçildi, Ctrl+C ile kopyala';setTimeout(function(){d.textContent='Kodu kopyala';},2500);});});
+  s.appendChild(d);b.appendChild(s);
+ }
+ if(n<PROBLEMLER.length){var t=el('div','btns');t.appendChild(dugme('b ana','Sonraki problem: '+PROBLEMLER[n].ad,function(){durum.sekme=n;kaydet();sayfa();window.scrollTo(0,0);}));b.appendChild(t);}
+ bittiEl.appendChild(b);
+}
+function kopyala(t,p,bitti){
+ function yedek(){var a=el('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();var o=false;try{o=document.execCommand('copy');}catch(e){}a.remove();
+  if(!o){var r=document.createRange();r.selectNodeContents(p);var s=getSelection();s.removeAllRanges();s.addRange(r);}bitti(o);}
+ if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(function(){bitti(true);},yedek);else yedek();
+}
+birimOlc();sayfa();
+})();
+</script>
+</body>
+</html>
