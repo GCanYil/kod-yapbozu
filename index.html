@@ -382,11 +382,14 @@ return {coz:coz,yurut:yurut,dene:dene,Hata:Hata};
 'use strict';
 /* ---------------------------------------------------------------- problemler */
 var PROBLEMLER=[
-{id:'p2',ad:'Tahmin oyunu',kendi:true,kopya:true,
- metin:['Bilgisayar 57 sayısını aklında tutuyor. Program oyuncudan 1 ile 100 arasında bir tahmin isteyecek. Tahmin 57\'den küçükse "Daha büyük bir sayı söyle.", büyükse "Daha küçük bir sayı söyle." yazacak. Oyuncu sayıyı bilirse "Bildin!" yazacak.',
+{id:'p2',ad:'Sıcak-soğuk oyunu',kendi:true,kopya:true,
+ metin:['Bilgisayar 57 sayısını aklında tutuyor. Program oyuncudan 1 ile 100 arasında bir tahmin isteyecek ve bu tahmine göre tek bir cevap yazacak.',
+  'Tahmin 57\'den küçükse "Serin" yazacak. Aradaki fark 20\'den fazlaysa "Serin" yerine "Soğuk" yazacak.',
+  'Tahmin 57\'den büyükse "Ilık" yazacak. Aradaki fark 20\'den fazlaysa "Ilık" yerine "Sıcak" yazacak.',
+  'Oyuncu sayıyı bilirse "Bildin!" yazacak.',
   'Satırları doğru sıraya ve doğru girintiye yerleştir. Satırların hepsini kullanman gerekmeyebilir. Oyuncunun sayıyı bildiği durumun satırları verilmedi; onları kendin yaz.'],
- satirlar:['elif tahmin > gizli:','print("Daha büyük bir sayı söyle.")','tahmin = int(input("Tahminin (1-100): "))','print("Daha küçük bir sayı söyle.")','gizli = 57','if tahmin > gizli:','if tahmin < gizli:'],
- girdiAd:'Tahmin',testler:[['30','Daha büyük bir sayı söyle.'],['80','Daha küçük bir sayı söyle.'],['57','Bildin!']]}
+ satirlar:['elif tahmin > gizli:','print("Soğuk")','tahmin = int(input("Tahminin (1-100): "))','if tahmin < gizli:','print("Ilık")','gizli = 57','elif tahmin < gizli:','print("Sıcak")','if tahmin < gizli - 20:','print("Serin")','elif tahmin > gizli + 20:'],
+ girdiAd:'Tahmin',testler:[['10','Soğuk'],['50','Serin'],['57','Bildin!'],['60','Ilık'],['99','Sıcak']]}
 ];
 var ENCOK=4;
 /* ---------------------------------------------------------------- yardımcılar */
@@ -400,7 +403,7 @@ function hl(s){return s.replace(PARCA,function(m,metin,sayi,soz){var e=esc(m);
  if(/^(print|input|int)$/.test(soz||''))return '<span class="hb">'+e+'</span>';return e;});}
 function sade(s){return s.toLocaleLowerCase('tr').replace(/[.!?…]+/g,'').replace(/\s+/g,' ').trim();}
 /* ---------------------------------------------------------------- durum: sekme kapanınca silinir, sayfa yenilenince kalır */
-var ANAHTAR='kod-yapbozu-2',durum=null;
+var ANAHTAR='kod-yapbozu-3',durum=null;
 try{durum=JSON.parse(sessionStorage.getItem(ANAHTAR)||'null');}catch(e){}
 if(!durum||!durum.p)durum={sekme:0,p:{}};
 PROBLEMLER.forEach(function(p){if(!durum.p[p.id])durum.p[p.id]=bos();});
