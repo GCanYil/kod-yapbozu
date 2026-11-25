@@ -382,14 +382,14 @@ return {coz:coz,yurut:yurut,dene:dene,Hata:Hata};
 'use strict';
 /* ---------------------------------------------------------------- problemler */
 var PROBLEMLER=[
-{id:'p2',ad:'Sıcak-soğuk oyunu',kendi:true,kopya:true,
- metin:['Bilgisayar 57 sayısını aklında tutuyor. Program oyuncudan 1 ile 100 arasında bir tahmin isteyecek ve bu tahmine göre tek bir cevap yazacak.',
-  'Tahmin 57\'den küçükse "Serin" yazacak. Aradaki fark 20\'den fazlaysa "Serin" yerine "Soğuk" yazacak.',
-  'Tahmin 57\'den büyükse "Ilık" yazacak. Aradaki fark 20\'den fazlaysa "Ilık" yerine "Sıcak" yazacak.',
+{id:'p2',ad:'Sayı tahmin oyunu',kendi:true,kopya:true,
+ metin:['Bilgisayar 63 sayısını aklında tutuyor. Program oyuncudan 1 ile 100 arasında bir tahmin isteyecek ve bu tahmine göre tek bir cevap yazacak.',
+  'Tahmin 63\'ten küçükse "Yaklaştın, biraz daha büyük bir sayı dene." yazacak. Aradaki fark 10\'dan fazlaysa bunun yerine "Daha büyük bir sayı dene." yazacak.',
+  'Tahmin 63\'ten büyükse "Yaklaştın, biraz daha küçük bir sayı dene." yazacak. Aradaki fark 10\'dan fazlaysa bunun yerine "Daha küçük bir sayı dene." yazacak.',
   'Oyuncu sayıyı bilirse "Bildin!" yazacak.',
   'Satırları doğru sıraya ve doğru girintiye yerleştir. Satırların hepsini kullanman gerekmeyebilir. Oyuncunun sayıyı bildiği durumun satırları verilmedi; onları kendin yaz.'],
- satirlar:['elif tahmin > gizli:','print("Soğuk")','tahmin = int(input("Tahminin (1-100): "))','if tahmin < gizli:','print("Ilık")','gizli = 57','elif tahmin < gizli:','print("Sıcak")','if tahmin < gizli - 20:','print("Serin")','elif tahmin > gizli + 20:'],
- girdiAd:'Tahmin',testler:[['10','Soğuk'],['50','Serin'],['57','Bildin!'],['60','Ilık'],['99','Sıcak']]}
+ satirlar:['elif tahmin > gizli:','print("Daha büyük bir sayı dene.")','tahmin = int(input("Tahminin (1-100): "))','if tahmin < gizli:','print("Yaklaştın, biraz daha küçük bir sayı dene.")','gizli = 63','elif tahmin < gizli:','print("Daha küçük bir sayı dene.")','if tahmin < gizli - 10:','print("Yaklaştın, biraz daha büyük bir sayı dene.")','elif tahmin > gizli + 10:'],
+ girdiAd:'Tahmin',testler:[['30','Daha büyük bir sayı dene.'],['60','Yaklaştın, biraz daha büyük bir sayı dene.'],['63','Bildin!'],['70','Yaklaştın, biraz daha küçük bir sayı dene.'],['90','Daha küçük bir sayı dene.']]}
 ];
 var ENCOK=4;
 /* ---------------------------------------------------------------- yardımcılar */
@@ -403,7 +403,7 @@ function hl(s){return s.replace(PARCA,function(m,metin,sayi,soz){var e=esc(m);
  if(/^(print|input|int)$/.test(soz||''))return '<span class="hb">'+e+'</span>';return e;});}
 function sade(s){return s.toLocaleLowerCase('tr').replace(/[.!?…]+/g,'').replace(/\s+/g,' ').trim();}
 /* ---------------------------------------------------------------- durum: sekme kapanınca silinir, sayfa yenilenince kalır */
-var ANAHTAR='kod-yapbozu-3',durum=null;
+var ANAHTAR='kod-yapbozu-4',durum=null;
 try{durum=JSON.parse(sessionStorage.getItem(ANAHTAR)||'null');}catch(e){}
 if(!durum||!durum.p)durum={sekme:0,p:{}};
 PROBLEMLER.forEach(function(p){if(!durum.p[p.id])durum.p[p.id]=bos();});
