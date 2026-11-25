@@ -14,6 +14,7 @@ header{background:var(--bg);border-bottom:2px solid var(--line);padding:12px 16p
 .ust{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center}
 h1{font-size:26px;color:var(--acc);font-family:var(--mono);margin-right:auto}
 nav{display:flex;flex-wrap:wrap;gap:8px}
+nav[hidden]{display:none}
 nav button{font:inherit;font-size:15px;font-weight:700;padding:8px 14px;border-radius:10px;border:2px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}
 nav button.sec{border-color:var(--acc);color:var(--acc);background:var(--soft)}
 nav button .tk{color:var(--ok);margin-left:6px}
@@ -381,15 +382,10 @@ return {coz:coz,yurut:yurut,dene:dene,Hata:Hata};
 'use strict';
 /* ---------------------------------------------------------------- problemler */
 var PROBLEMLER=[
-{id:'p1',ad:'Sınav notu',
- metin:['Bir okulda sınavdan 50 ve üzeri alan öğrenci geçiyor. Program öğrenciye sınavdan kaç aldığını soracak. Geçen öğrenciye "Geçtin!", geçemeyen öğrenciye "Bir dahaki sefere!" yazacak.',
-  'Satırları doğru sıraya ve doğru girintiye yerleştir. Satırların hepsini kullanman gerekmeyebilir.'],
- satirlar:['print("Bir dahaki sefere!")','if puan = 50:','else:','puan = int(input("Sınavdan kaç aldın? "))','print("Geçtin!")','if puan >= 50:'],
- girdiAd:'Not',testler:[['30','Bir dahaki sefere!'],['50','Geçtin!'],['80','Geçtin!']]},
 {id:'p2',ad:'Tahmin oyunu',kendi:true,kopya:true,
  metin:['Bilgisayar 57 sayısını aklında tutuyor. Program oyuncudan 1 ile 100 arasında bir tahmin isteyecek. Tahmin 57\'den küçükse "Daha büyük bir sayı söyle.", büyükse "Daha küçük bir sayı söyle." yazacak. Oyuncu sayıyı bilirse "Bildin!" yazacak.',
-  'Satırları doğru sıraya ve doğru girintiye yerleştir. Oyuncunun sayıyı bildiği durumun satırları verilmedi; onları kendin yaz.'],
- satirlar:['elif tahmin > gizli:','print("Daha büyük bir sayı söyle.")','tahmin = int(input("Tahminin (1-100): "))','print("Daha küçük bir sayı söyle.")','gizli = 57','if tahmin < gizli:'],
+  'Satırları doğru sıraya ve doğru girintiye yerleştir. Satırların hepsini kullanman gerekmeyebilir. Oyuncunun sayıyı bildiği durumun satırları verilmedi; onları kendin yaz.'],
+ satirlar:['elif tahmin > gizli:','print("Daha büyük bir sayı söyle.")','tahmin = int(input("Tahminin (1-100): "))','print("Daha küçük bir sayı söyle.")','gizli = 57','if tahmin > gizli:','if tahmin < gizli:'],
  girdiAd:'Tahmin',testler:[['30','Daha büyük bir sayı söyle.'],['80','Daha küçük bir sayı söyle.'],['57','Bildin!']]}
 ];
 var ENCOK=4;
@@ -404,7 +400,7 @@ function hl(s){return s.replace(PARCA,function(m,metin,sayi,soz){var e=esc(m);
  if(/^(print|input|int)$/.test(soz||''))return '<span class="hb">'+e+'</span>';return e;});}
 function sade(s){return s.toLocaleLowerCase('tr').replace(/[.!?…]+/g,'').replace(/\s+/g,' ').trim();}
 /* ---------------------------------------------------------------- durum: sekme kapanınca silinir, sayfa yenilenince kalır */
-var ANAHTAR='kod-yapbozu-1',durum=null;
+var ANAHTAR='kod-yapbozu-2',durum=null;
 try{durum=JSON.parse(sessionStorage.getItem(ANAHTAR)||'null');}catch(e){}
 if(!durum||!durum.p)durum={sekme:0,p:{}};
 PROBLEMLER.forEach(function(p){if(!durum.p[p.id])durum.p[p.id]=bos();});
@@ -421,7 +417,7 @@ function anahtar(x){return x.kendi?'k'+x.id:'s'+x.id;}
 /* ---------------------------------------------------------------- çizim */
 var ana=document.getElementById('ana'),nav=document.getElementById('nav'),havuzEl,cozumEl,ciktiEl,sonucEl,bittiEl,calB,birim=40,calisma=0;
 function birimOlc(){var s=el('span');s.style.cssText='position:absolute;visibility:hidden;font:17px '+getComputedStyle(document.documentElement).getPropertyValue('--mono');s.textContent='00000000';document.body.appendChild(s);birim=Math.round(s.getBoundingClientRect().width/2)||40;s.remove();document.documentElement.style.setProperty('--birim',birim+'px');}
-function navCiz(){nav.innerHTML='';PROBLEMLER.forEach(function(p,i){
+function navCiz(){nav.innerHTML='';if(PROBLEMLER.length<2){nav.hidden=true;return;}PROBLEMLER.forEach(function(p,i){
  var b=dugme(i===durum.sekme?'sec':'','',function(){if(durum.sekme===i)return;durum.sekme=i;kaydet();sayfa();});
  b.innerHTML=(i+1)+'. '+esc(p.ad)+(durum.p[p.id].tamam?'<span class="tk" aria-label="tamamlandı">✓</span>':'');
  if(i===durum.sekme)b.setAttribute('aria-current','page');nav.appendChild(b);});}
@@ -599,7 +595,8 @@ function bittiCiz(){
  var ayni=kod===kodMetni();
  b.appendChild(el('strong','',P().kopya?(ayni?'Oyunun çalışıyor. Çalıştır\'a basıp istediğin kadar oynayabilirsin.':'Daha önce çalışan oyunun:'):(ayni?'Programın çalışıyor.':'Bu problemi daha önce çözdün.')));
  if(P().kopya){
-  if(!/^\s*else\s*:/m.test(kod))b.appendChild(el('div','','Son dalı koşul yazmadan da kurabilir misin?'));
+  if(!/^\s*elif\b/m.test(kod))b.appendChild(el('div','','Aynı oyunu elif kullanarak da kurabilir misin?'));
+  else if(!/^\s*else\s*:/m.test(kod))b.appendChild(el('div','','Son dalı koşul yazmadan da kurabilir misin?'));
   var p=el('pre','kod',hl(kod));b.appendChild(p);
   var s=el('div','btns'),d=dugme('b ana','Kodu kopyala',function(){kopyala(kod,p,function(iyi){d.textContent=iyi?'Kopyalandı':'Kod seçildi, Ctrl+C ile kopyala';setTimeout(function(){d.textContent='Kodu kopyala';},2500);});});
   s.appendChild(d);b.appendChild(s);
